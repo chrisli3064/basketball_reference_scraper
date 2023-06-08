@@ -17,8 +17,8 @@ class RetriableRequest:
         RetriableRequest.__session = HttpSession()
         retries = Retry(total=30,
                         backoff_factor=1,
-                        status_forcelist=[429],
-                        allowed_methods=False)
+                        status_forcelist=[429])
+                        
         RetriableRequest.__session.mount("https://", HTTPAdapter(max_retries=retries))
 
     @staticmethod

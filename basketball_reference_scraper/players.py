@@ -10,18 +10,14 @@ except:
 
 def get_stats(_name, stat_type='PER_GAME', playoffs=False, career=False, ask_matches = True):
     name = lookup(_name, ask_matches)
-    suffix = get_player_suffix(name)
-    if suffix:
-        suffix = suffix.replace('/', '%2F')
-    else:
-        return pd.DataFrame()
+    suffix = get_player_suffix(name)[:-5]
     selector = stat_type.lower()
     if playoffs:
         selector = 'playoffs_'+selector
-    r = RetriableRequest.get(f'https://widgets.sports-reference.com/wg.fcgi?css=1&site=bbr&url={suffix}&div=div_{selector}')
+    r = RetriableRequest.get(f'https://www.basketball-reference.com{suffix}.html')
     if r.status_code==200:
         soup = BeautifulSoup(r.content, 'html.parser')
-        table = soup.find('table')
+        table = soup.find('table', attrs={'id': selector})
         if table is None:
             return pd.DataFrame()
         df = pd.read_html(str(table))[0]
